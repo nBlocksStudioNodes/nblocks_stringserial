@@ -4,7 +4,17 @@ nBlock_StringSerial::nBlock_StringSerial(PinName pinTX, PinName pinRX): _ser(pin
     return;
 }
 void nBlock_StringSerial::triggerInput(nBlocks_Message message) {
-	_ser.printf(message.stringValue);
+    if (message.dataType == OUTPUT_TYPE_STRING) {
+        _ser.printf(message.stringValue);
+    }
+
+    if (message.dataType == OUTPUT_TYPE_ARRAY) {
+        char * data_array = (char *)(message.pointerValue);
+        for (uint32_t i=0; i<message.dataLength; i++) {
+            _ser.putc(data_array[i]);
+        }
+    }
+    
 }
 void nBlock_StringSerial::endFrame(void) {
     if (_ser.readable()) {
